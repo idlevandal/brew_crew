@@ -8,6 +8,10 @@ final databaseServiceProvider = Provider<DatabaseService>((_) {
   return DatabaseService();
 });
 
+final databaseServiceUIDProvider = Provider.family<DatabaseService, String>((ref, uid) {
+  return DatabaseService(uid: uid);
+});
+
 final brewStreamProvider = StreamProvider<List<Brew>>((ref) {
   final db = ref.watch(databaseServiceProvider);
   return db.brewCollection.snapshots().map((event) => db.brewListFromSnapshot(event));
