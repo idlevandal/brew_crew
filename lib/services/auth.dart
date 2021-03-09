@@ -2,7 +2,7 @@ import 'package:brew_crew_two/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// RIVERPOD providers...
+// PROVIDERS
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
   return FirebaseAuth.instance;
 });
@@ -15,7 +15,7 @@ final authServiceProvider = Provider<AuthService>((ref) {
   final firebaseAuth = ref.watch(firebaseAuthProvider);
   return AuthService(firebaseAuth);
 });
-// ______________________________________________________
+
 
 class AuthService {
   final FirebaseAuth _auth;

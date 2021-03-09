@@ -1,7 +1,6 @@
 import 'package:brew_crew_two/models/brew.dart';
 import 'package:brew_crew_two/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final databaseServiceProvider = Provider<DatabaseService>((_) {
@@ -14,18 +13,12 @@ final databaseServiceUIDProvider = Provider.family<DatabaseService, String>((ref
 
 final brewStreamProvider = StreamProvider<List<Brew>>((ref) {
   final db = ref.watch(databaseServiceProvider);
-  return db.brewCollection.snapshots().map((event) => db.brewListFromSnapshot(event));
+  return db.brews;
 });
 
-// final brewListProvider = StreamProvider<List<Brew>>((ref) {
-//   final db = ref.watch(databaseServiceProvider);
-//   final brews = ref.watch(brewStreamProvider);
-//   return brews.map(db.brewListFromSnapshot);
-// });
-
 final userDataStreamProvider = StreamProvider.family<UserData, String>((ref, uid) {
-  final db = ref.watch(databaseServiceProvider);
-  return db.brewCollection.doc(uid).snapshots().map(db.userDataFromSnapshot);
+  final db = ref.watch(databaseServiceUIDProvider(uid));
+  return db.userData;
 });
 
 class DatabaseService {
@@ -38,7 +31,6 @@ class DatabaseService {
   final CollectionReference brewCollection = FirebaseFirestore.instance.collection('brews');
 
   Future updateUserData(String sugars, String name, int strength) async {
-    // print('$uid, $sugars, $name, $strength');
     return await brewCollection.doc(uid).set({
       'sugars': sugars,
       'name': name,
@@ -57,7 +49,7 @@ class DatabaseService {
     }).toList();
   }
 
-  UserData userDataFromSnapshot(DocumentSnapshot snapshot) {
+  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
       uid: uid,
       name: snapshot.data()['name'],
@@ -68,13 +60,14 @@ class DatabaseService {
 
   Stream<UserData> get userData {
     return brewCollection.doc(uid).snapshots()
-        .map(userDataFromSnapshot);
+        .map(_userDataFromSnapshot);
   }
 
   // get brews table/document stream
-  // Stream<QuerySnapshot> get brews {
-  //   return brewCollection.snapshots();
-  // }
+  Stream<List<Brew>> get brews {
+    return brewCollection.snapshots()
+      .map((snapshot) => brewListFromSnapshot(snapshot));
+  }
 
 }
 
