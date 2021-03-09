@@ -31,9 +31,9 @@ class _SettingsFormState extends State<SettingsForm> {
 
           return userData.when(
               data: (data) {
-                _currentName = data.name;
-                _currentSugars = data.sugars;
-                _currentStrength = data.strength;
+                // _currentName = data.name;
+                // _currentSugars = data.sugars;
+                // _currentStrength = data.strength;
 
                 return Column(
                   children: <Widget>[
@@ -43,14 +43,14 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                      initialValue: _currentName,
+                      initialValue: _currentName ?? data.name,
                       decoration: textInputDecoration.copyWith(hintText: 'Name'),
                       validator: (val) => val.isEmpty ? 'Please enter a name' : null,
                       onChanged: (val) => setState(() => _currentName = val),
                     ),
                     SizedBox(height: 10.0),
                     DropdownButtonFormField(
-                      value: _currentSugars ?? '0',
+                      value: _currentSugars ?? data.sugars,
                       decoration: textInputDecoration,
                       items: sugars.map((sugar) {
                         return DropdownMenuItem(
@@ -62,9 +62,9 @@ class _SettingsFormState extends State<SettingsForm> {
                     ),
                     SizedBox(height: 10.0),
                     Slider(
-                      value: (_currentStrength ?? 100).toDouble(),
-                      activeColor: Colors.brown[_currentStrength ?? 100],
-                      inactiveColor: Colors.brown[_currentStrength ?? 100],
+                      value: (_currentStrength ?? data.strength).toDouble(),
+                      activeColor: Colors.brown[_currentStrength ?? data.strength],
+                      inactiveColor: Colors.brown[_currentStrength ?? data.strength],
                       min: 100,
                       max: 900,
                       divisions: 8,
